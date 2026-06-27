@@ -8,6 +8,24 @@
 - ✅ encode-x64.js 重构：添加 mov_mr64/rm64/cmp_rr/sub_rr/imul_rr，移除未使用的函数
 - ✅ pe-builder.js 重构
 - ✅ 仓库清理：添加 .gitignore，移除旧测试文件
+- ✅ 自举前置门禁脚本：`scripts/bootstrap-check.sh`
+- ✅ strict 报告：`bootstrap-report.txt` + `bootstrap-report-diff.txt`
+- ✅ 固定基线与锁定检查：`bootstrap-baseline.txt` + `--strict --lock`
+
+## 自举门禁（当前推荐流程）
+
+1. 设定或更新基线（仅在你确认当前状态正确时执行）
+	- `./scripts/bootstrap-check.sh --strict --update-baseline`
+2. 日常回归门禁（每次改动后执行）
+	- `./scripts/bootstrap-check.sh --strict --lock`
+3. 快速健康检查（不写报告）
+	- `./scripts/bootstrap-check.sh`
+
+### 产物说明
+
+- `bootstrap-report.txt`: 当前运行的摘要（hash 与 cmp 状态）
+- `bootstrap-report-diff.txt`: 当前结果与固定基线差异
+- `bootstrap-baseline.txt`: 固定基线（lock 模式对比对象）
 
 ## 下一步：实现 H_30 opcode emitter（自举关键）
 

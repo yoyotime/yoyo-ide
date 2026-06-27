@@ -1,0 +1,4 @@
+mini-kyc.ky.sha256: 658c237c906fc07a9c79c6f8946912e48c88931088d3fe8d8a7d8b9c1e35d430
+mini-kyc.exe.sha256: a806f0fae59d099bd5c1c0785cb81c855acfd1855b6dc611754dc3deb9c7d618
+mini-kyc.ky.cmp: 0
+mini-kyc.exe.cmp: 0

@@ -1,0 +1,33 @@
+name: Bootstrap Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  bootstrap-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bootstrap strict lock gate
+        run: bash scripts/bootstrap-check.sh --strict --lock
+
+      - name: Upload bootstrap reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-reports
+          if-no-files-found: ignore
+          path: |
+            bootstrap-report.txt
+            bootstrap-report-diff.txt

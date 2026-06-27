@@ -1,5 +1,8 @@
 *.exe
 *.txt
+!bootstrap-baseline.txt
+bootstrap-report.txt
+bootstrap-report-diff.txt
 *.bin
 *.hex
 *.bak
