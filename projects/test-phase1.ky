@@ -1,0 +1,23 @@
+; test-phase1.ky - Phase 1 validation using only opcodes: 40 FF 30 60 65 66 70 71 41
+; Computes: count from 0 to 3 using INC/CMP/JE, exits via return chain.
+; When compiled by mini-kyc.exe the output.exe should run and exit with code 0.
+
+41 01  ; call H_01 (entry point)
+
+; H_01: main entry - set counter to 0, call loop
+40 01
+30 50 00   ; state_50 = 0 (counter)
+30 51 03   ; state_51 = 3 (limit)
+41 02      ; call H_02 (count loop)
+FF         ; return (-> ExitProcess(0))
+
+; H_02: count loop - inc state_50 until == state_51
+40 02
+66 50      ; state_50++
+65 50 51   ; cmp state_50, state_51
+71 03      ; je H_03 (done)
+70 02      ; jmp H_02 (loop)
+
+; H_03: loop done
+40 03
+FF         ; return
