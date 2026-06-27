@@ -22,3 +22,8 @@ H
 _*.js
 _*.bin
 experiments/
+node_modules/
+input.ky
+stdout.log
+stderr.log
+*.log

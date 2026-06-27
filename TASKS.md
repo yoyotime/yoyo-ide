@@ -47,14 +47,37 @@ mini-kyc.exe.sha256: 938e7940cf5521c8922e1928cda67854f62e12e0d090e3dae0eb2f34bb3
 
 ## 已完成
 
-- ✅ 恢复 babb051 bootstrap 基础设施（BOOTSTRAP.md / Makefile / scripts/bootstrap-check.sh / bootstrap-baseline.txt / .github/workflows/bootstrap-gate.yml / .gitignore / TASKS.md）
+- ✅ 恢复 babb051 bootstrap 基础设施
 - ✅ 更新 baseline 到 H_30 之后的"已知良好"状态
 - ✅ 验证决定性：同输入两次跑产出 bit-identical
 - ✅ Stash flash v4 改动到 `flash-v4-mess-2026-06-27`
+- ✅ flash v4 patch 逐条重审：4 个 patch（A/B/C/D），A 和 B 已应用，C 已丢弃，D 已丢弃
+- ✅ `spec.md` 编写完成（~700 行，16 章）
+- ✅ `debug.js` — Windows Debug API debugger 通过 koffi 实现（功能完整，可设 INT3/硬件断点/读状态槽/读进程内存）
+- ✅ `run-safe.ps1` — 带超时 kill 的安全 exe 启动器
+- ✅ `test-stage2.ps1` — Stage 2 自动测试脚本
+- ✅ **INT3 探针确认启动段完全正常**：VirtualAlloc(R15=0xc20000)、GetStdHandle(R14=0xac0) 均成功
+- ✅ **定位 Access Violation 在 RVA 0x10fd**（LoadFile 内部 ReadFile 调用时 RDX=0）
+- ✅ **确定输入文件存在**：input.ky（97271 bytes）被成功 CreateFileA + GetFileSize，state[0x0A]=0xd40000，state[0x0B]=0x17bf7
+
+## 当前卡点（2026-06-29）
+
+### Stage 2 自举 hangs
+- **启动段正常** ✅ — 通过 INT3 在 RVA 0x1000（入口）和 0x1044（启动段结束）验证
+- **LoadFile 开始执行** ✅ — RVA 0x1080 断点确认 CreateFileA 参数正确
+- **Access Violation 在 RVA 0x10fd** ❌ — RIP 在 ReadFile 附近，RDX=0 但 state[0x0A]=0xd40000
+
+### 根因推测
+stGet(RDX， 0x0A) 应该从 R15+0x0A*8=0xc20050 读取 state[0x0A]=0xd40000，但 crash 时 RDX=0。
+可能原因：
+1. **ky-compiler.js 的 opcode 0x50 发射器**在`stPut(0x0A, RAX)`到`stGet(RDX, 0x0A)`之间有指令覆盖了 RDX
+2. **寄存器冲突** — emit 代码中某个 `mov_ri`/`xor_rr` 无意中写入了 RDX
+3. **state slot 写入后又被后续 opcode 覆盖**（但 crash 在同一 opcode 内部）
 
 ## 待办
 
+- [ ] Stage 2 self-hosting 验证：修复 RVA 0x10fd AV（RDX 被清零问题）
+- [ ] 修复后重新跑 test-stage2.ps1 确认产出 output.exe
+- [ ] 更新 bootstrap-baseline.txt 为新 SHA256
 - [ ] Stage 1 lock gate 在 CI 跑通
-- [ ] Stage 2 self-hosting 验证（mini-kyc.exe → mini-kyc2.exe bit-identical）
-- [ ] 重审 flash v4 的改动，决定哪些丢弃、哪些保留
-- [ ] Phase 2 opcode emitter 增量添加（每个跑一次 gate）
+- [ ] Stage 3: 三阶段自举收敛

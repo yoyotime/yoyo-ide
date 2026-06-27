@@ -122,7 +122,7 @@ function compile(src){
       E.mov_mi64(code,RSP,0x20,2n);E.mov_mi64(code,RSP,0x28,0x80n);E.mov_mi64(code,RSP,0x30,0n);
       ci('KERNEL32.dll.CreateFileA');E.mov_rr(code,R13,RAX);
       E.mov_rr(code,RCX,R13);stGet(RDX,a[0].v);
-      E.mov_ri(code,R8,BigInt(a[2]?a[2].v:0));
+      stGet(R8,a[2]?a[2].v:0);
       lr(R9,RSP,0x20);E.mov_mi64(code,RSP,0x20,0n);ci('KERNEL32.dll.WriteFile');
       E.mov_rr(code,RCX,R13);ci('KERNEL32.dll.CloseHandle');
     }
